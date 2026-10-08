@@ -1,15 +1,19 @@
 CC      ?= cc
 CFLAGS  ?= -O2 -Wall -Wextra -std=c11
-LDLIBS  := $(shell pkg-config --libs x11)
-CFLAGS  += $(shell pkg-config --cflags x11)
 
-xlib-hello: src/main.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
+# 기본: GTK 버전. 툴킷 없는 Xlib 버전은 `make xlib-hello`
+all: gtk-lab
 
-run: xlib-hello
-	./xlib-hello -v
+gtk-lab: gtk/main.c
+	$(CC) $(CFLAGS) $(shell pkg-config --cflags gtk4) -o $@ $< $(shell pkg-config --libs gtk4)
+
+xlib-hello: xlib/main.c
+	$(CC) $(CFLAGS) $(shell pkg-config --cflags x11) -o $@ $< $(shell pkg-config --libs x11)
+
+run: gtk-lab
+	./gtk-lab
 
 clean:
-	rm -f xlib-hello
+	rm -f gtk-lab xlib-hello
 
-.PHONY: run clean
+.PHONY: all run clean
